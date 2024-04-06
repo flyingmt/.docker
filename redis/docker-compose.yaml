@@ -1,0 +1,34 @@
+# docker network create redis_network
+# docker volume create redis_data
+
+version: "3.7" 
+services:
+  redis: 
+    image: redis
+    restart: always
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - redis_network
+
+  registry:
+    image: patrikx3/p3x-redis-ui
+    restart: always
+    ports:
+      - "7843:7843"
+    volumes:
+      - ./settings:/settings
+    networks:
+      - redis_network
+
+networks:
+  redis_network:
+    external: true
+
+volumes:
+  redis_data:
+    external: true
